@@ -1,17 +1,19 @@
+#include "City.h"
 #include "raylib.h"
-#include <iostream>
 
-using namespace std;
+City* city = new City(3);
 
 int main() {
-
     
-    cout << "Hello World" << endl;
 
-    InitWindow(300, 300, "My first Raylib window!");
+    InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "My first Raylib window!");
     SetTargetFPS(60);
+    //ToggleFullscreen();
 
     while (!WindowShouldClose()) {
+        float dt = GetFrameTime();
+        city->update(dt);
+        city->draw();
         BeginDrawing();
         ClearBackground(DARKGREEN);
         EndDrawing();
