@@ -1,21 +1,22 @@
-#include "City.h"
+#include "Grid.h"
 #include "raylib.h"
+#include "Node.h"
 
-City* city = new City(3);
+Grid* grid = new Grid();
 
 int main() {
     
 
-    InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "My first Raylib window!");
+    InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Pathfinding");
     SetTargetFPS(60);
-    //ToggleFullscreen();
+    ToggleFullscreen();
 
     while (!WindowShouldClose()) {
         float dt = GetFrameTime();
-        city->update(dt);
-        city->draw();
+        grid->update(dt);
+        grid->draw();
         BeginDrawing();
-        ClearBackground(DARKGREEN);
+        ClearBackground(Color{ 200, 200, 200, 255 });
         EndDrawing();
     }
 
