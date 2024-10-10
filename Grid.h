@@ -25,7 +25,7 @@ public:
 
 	Vector2 getNearestPosition(Vector2 pos);
 	void addNodeToDraw(Vector2 pos);
-	//std::vector <Vector2> doAStar();
+	std::vector <Vector2> doAStar();
 
 private:
 	bool isDebugActive;

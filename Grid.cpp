@@ -136,15 +136,27 @@ void Grid::addNodeToDraw(Vector2 position)
 	}
 }
 
-// std::vector<Vector2> Grid::doAStar()
-// {
-// 	std::vector <Vector2> openList = {};
-// 	std::vector <Vector2> closedList = {};
-//
-// 	openList.emplace_back(startPos);
-//
-// 	while(openList.size()!=0)
-// 	{
-// 		//Vector2 currentNode = 
-// 	}
-// }
+std::vector<Vector2> Grid::doAStar()
+{
+	std::vector <Node*> openList = {};
+	std::vector <Node*> closedList = {};
+
+	for(auto node : nodes)
+	{
+		if(node->getType() == Type::StartPoint) openList.emplace_back();
+	}
+
+	bool isFound = false;
+
+	Node* currentNode = openList[0];
+	
+	while(openList.size()!=0)
+	{
+		for(auto list : openList)
+		{
+			
+		}
+		closedList.emplace_back(currentNode);
+		closedList.emplace_back()
+	}
+}
