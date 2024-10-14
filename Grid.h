@@ -1,16 +1,15 @@
 ﻿#pragma once
+#include "Node.h"
 #include <raylib.h>
 #include <vector>
 
-class Node;
-
-const static auto borderColor = WHITE;
+static constexpr auto borderColor = WHITE;
 
 enum DrawMode
 {
-	startNode,
-	endNode,
-	obstacleNode
+	StartNode,
+	EndNode,
+	ObstacleNode
 };
 
 Color getColorForDrawMode(DrawMode drawMode);
@@ -22,13 +21,15 @@ public:
 	
 	void update(float dt);
 	void draw();
-
-	Vector2 getNearestPosition(Vector2 pos);
-	void addNodeToDraw(Vector2 pos);
-	std::vector <Vector2> doAStar();
+	Node& getNearestNode(const Vector2 pos);
+	std::vector <Node*> doAStar();
+	std::vector <Node*> getChilds(Node* node);
+	Node& getEndNode();
 
 private:
 	bool isDebugActive;
 	enum DrawMode currentDrawMode;
-	std::vector<Node*> nodes;
+	Node* nodes[horizontalSize][verticalSize];
+	bool canDrawStart;
+	bool canDrawEnd;
 };

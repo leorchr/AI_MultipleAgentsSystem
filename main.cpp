@@ -9,7 +9,7 @@ int main() {
 
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Pathfinding");
     SetTargetFPS(60);
-    ToggleFullscreen();
+    //ToggleFullscreen();
 
     while (!WindowShouldClose()) {
         float dt = GetFrameTime();
