@@ -17,6 +17,7 @@ public:
 	Vector2 getPosition() const { return position; }
 	std::vector<Node*> getPath() const { return path; }
 	void setCanMove(bool canMove);
+	void setAgents(std::vector<Agent*> agents);
 private:
 	Vector2 position;
 	int speed;
@@ -24,4 +25,5 @@ private:
 	int currentPathIndex;
 	bool canMove;
 	std::vector<Node*> path;
+	std::vector<Agent*> agents;
 };

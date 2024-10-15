@@ -3,7 +3,11 @@
 #include "raylib.h"
 #include "raymath.h"
 
-Agent::Agent(Vector2 position) : position(position), speed(50), size(10), currentPathIndex(0), canMove(true) {}
+Agent::Agent(Vector2 position) : position(position), speed(50), size(10), currentPathIndex(0), canMove(true)
+{
+	path = {};
+	agents = {};
+}
 
 Agent::~Agent() {}
 
@@ -39,4 +43,9 @@ void Agent::setPath(std::vector<Node*> path) {
 void Agent::setCanMove(bool canMove)
 {
 	this->canMove = canMove;
+}
+
+void Agent::setAgents(std::vector<Agent*> agents)
+{
+	this->agents = agents;
 }

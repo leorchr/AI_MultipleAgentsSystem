@@ -15,7 +15,8 @@ Color getColorForDrawMode(DrawMode drawMode)
 	return WHITE;
 }
 
-Grid::Grid(Agent* agent) : isDebugActive(true), currentDrawMode(DrawMode::ObstacleNode), agent(agent), currentObjective(Vector2Zero())
+Grid::Grid(std::vector<Agent*> agents) : isDebugActive(true), currentDrawMode(DrawMode::ObstacleNode), agents(
+	                                         std::move(agents)), currentObjective(Vector2Zero())
 {
 	for(int i = 0; i < horizontalSize; i++)
 	{
@@ -31,20 +32,20 @@ void Grid::update(float dt)
 	if(IsKeyPressed(KEY_W)) currentDrawMode = DrawMode::ObstacleNode;
 	if(IsMouseButtonDown(MOUSE_BUTTON_LEFT))
 	{
-		agent->setCanMove(false);
+		for(auto agent : agents) agent->setCanMove(false);
 		Vector2 mousePos = getClampedMousePosition();
 		Node& nodeTargeted = getNearestNode(mousePos);
 		switch(currentDrawMode)
 		{
 		case DrawMode::ObstacleNode:
 			nodeTargeted.setType(Type::Obstacle);
-			if(currentObjective.x != 0 && currentObjective.y != 0)setupAgentPath(currentObjective);
+			if(currentObjective.x != 0 && currentObjective.y != 0) setupAgentPath(currentObjective);
 			break;
 		}
 	}
 	if(IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
 	{
-		agent->setCanMove(true);
+		for(auto agent : agents) agent->setCanMove(true);
 	}
 	if(IsKeyPressed(KEY_Q) && !isDebugActive) isDebugActive = true;
 	else if(IsKeyPressed(KEY_Q) && isDebugActive) isDebugActive = false;
@@ -210,8 +211,8 @@ void Grid::setupAgentPath(Vector2 endPos)
 		}
 		node->setType(Type::Empty);
 	}
-	path = doAStar(agent->getPosition(), endPos);
-	agent->setPath(path);
+	path = doAStar(agents[0]->getPosition(), endPos);
+	for(auto agent : agents) agent->setPath(path);
 }
 
 std::vector<Node*> Grid::makePath(Node* goalNode)

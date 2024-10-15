@@ -19,7 +19,7 @@ class Agent;
 class Grid
 {
 public:
-	Grid(Agent* agent);
+	Grid(std::vector<Agent*> agents);
 	
 	void update(float dt);
 	void draw();
@@ -35,6 +35,7 @@ private:
 	enum DrawMode currentDrawMode;
 	Node* nodes[horizontalSize][verticalSize];
 	std::vector<Node*> path;
+	std::vector <Agent*> agents;
 	Agent* agent;
 	Vector2 currentObjective;
 };
