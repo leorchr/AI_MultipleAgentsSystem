@@ -31,7 +31,8 @@ void Grid::update(float dt)
 	if(IsKeyPressed(KEY_W)) currentDrawMode = DrawMode::ObstacleNode;
 	if(IsMouseButtonDown(MOUSE_BUTTON_LEFT))
 	{
-		Vector2 mousePos = GetMousePosition();
+		agent->setCanMove(false);
+		Vector2 mousePos = getClampedMousePosition();
 		Node& nodeTargeted = getNearestNode(mousePos);
 		switch(currentDrawMode)
 		{
@@ -41,11 +42,15 @@ void Grid::update(float dt)
 			break;
 		}
 	}
+	if(IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
+	{
+		agent->setCanMove(true);
+	}
 	if(IsKeyPressed(KEY_Q) && !isDebugActive) isDebugActive = true;
 	else if(IsKeyPressed(KEY_Q) && isDebugActive) isDebugActive = false;
 	if(IsKeyPressed(KEY_SPACE))
 	{
-		currentObjective = GetMousePosition();
+		currentObjective = getClampedMousePosition();
 		setupAgentPath(currentObjective);
 	}
 }
@@ -75,7 +80,7 @@ void Grid::draw()
 	}
 	
 	// Draw Mouse
-	Vector2 mousePos = GetMousePosition();
+	Vector2 mousePos = getClampedMousePosition();
 	DrawCircle(mousePos.x, mousePos.y,5,getColorForDrawMode(currentDrawMode));
 }
 
@@ -130,7 +135,9 @@ std::vector<Node*> Grid::doAStar(Vector2 startPos, Vector2 endPos)
 
 	// Add the start node
 	Node* endNode = &getNearestNode(endPos);
+	endNode->setType(Type::EndPoint);
 	Node* startNode = &getNearestNode(startPos);
+	startNode->setType(Type::StartPoint);
 	openList.emplace_back(startNode);
 
 	//Loop until find the end node
@@ -188,10 +195,23 @@ std::vector<Node*> Grid::doAStar(Vector2 startPos, Vector2 endPos)
 
 void Grid::setupAgentPath(Vector2 endPos)
 {
+	for(auto node : path)
+	{
+		for(int i = 0; i < horizontalSize; i++)
+		{
+			for(int y = 0; y < verticalSize; y++)
+			{
+				if(*nodes[i][y] == *node)
+				{
+					if(nodes[i][y]->getType() == Type::Obstacle) continue;
+					nodes[i][y]->setType(Type::Empty);
+				}
+			}
+		}
+		node->setType(Type::Empty);
+	}
 	path = doAStar(agent->getPosition(), endPos);
 	agent->setPath(path);
-	getNearestNode(agent->getPosition()).setType(Type::StartPoint);
-	getNearestNode(endPos).setType(Type::EndPoint);
 }
 
 std::vector<Node*> Grid::makePath(Node* goalNode)
@@ -202,8 +222,8 @@ std::vector<Node*> Grid::makePath(Node* goalNode)
 		path.push_back(goalNode);
 		goalNode = goalNode->getParent();
 	}
-
 	std::reverse(path.begin(), path.end());
+
 	for(auto node : path)
 	{
 		for(int i = 0; i < horizontalSize; i++)
@@ -218,6 +238,7 @@ std::vector<Node*> Grid::makePath(Node* goalNode)
 		}
 		node->setType(Type::Path);
 	}
+	path[0]->setType(Type::StartPoint);
 	return path;
 }
 
@@ -269,4 +290,14 @@ std::vector<Node*> Grid::getChilds(Node* node)
 		}
 	}
 	return std::vector<Node*>{};
+}
+
+Vector2 Grid::getClampedMousePosition()
+{
+	Vector2 mousePos = GetMousePosition();
+	if(mousePos.x < 0) mousePos.x = 10;
+	if(mousePos.y < 0) mousePos.y = 10;
+	if(mousePos.x > WINDOW_WIDTH) mousePos.x = WINDOW_WIDTH-10;
+	if(mousePos.y > WINDOW_HEIGHT) mousePos.y = WINDOW_HEIGHT-10;
+	return mousePos;
 }

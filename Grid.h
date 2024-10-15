@@ -28,6 +28,7 @@ public:
 	void setupAgentPath(Vector2 endPos);
 	std::vector <Node*> makePath(Node* goalNode);
 	std::vector <Node*> getChilds(Node* node);
+	Vector2 getClampedMousePosition();
 
 private:
 	bool isDebugActive;
