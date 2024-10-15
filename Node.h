@@ -30,6 +30,7 @@ class Node
 public:
 	Node(Vector2 position, Type type);
 	Node();
+	Node(const Node& other);
 	bool operator==(const Node& other) const;
 	~Node();
 	void draw();
@@ -53,5 +54,7 @@ private:
 	Node* parent;
 	Vector2 position;
 	Type type;
+	static int nodesCreated;
+	int id;
 };
 

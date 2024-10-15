@@ -136,19 +136,23 @@ Node& Grid::getNearestNode(Vector2 pos)
 std::vector<Node*> Grid::doAStar()
 {
 	Node* goalNode = nullptr;
+
+	// Initialize both open and closed list
 	std::vector <Node*> openList = {};
 	std::vector <Node*> closedList = {};
 
+	// Add the start node
 	openList.emplace_back(&getStartNode());
 
-	
-	while(openList.size()!=0)
+	//Loop until find the end node
+	while(!openList.empty())
 	{
+		//Init current node to the least F node
 		Node* currentNode = nullptr;
+		currentNode = openList[0];
 		for(auto node : openList)
 		{
-			if(currentNode == nullptr) currentNode = node;
-			else if (node->getF() < currentNode->getF()) currentNode = node;
+			if (node->getF() < currentNode->getF()) currentNode = node;
 		}
 		
 		closedList.emplace_back(currentNode);
@@ -160,9 +164,9 @@ std::vector<Node*> Grid::doAStar()
 		}
 		std::vector<Node*> childNodes = getChilds(currentNode);
 		
-		for(auto childrens : childNodes)
+		for(auto children : childNodes)
 		{
-			Node* child = new Node(Vector2{childrens->getPosition().x, childrens->getPosition().y}, childrens->getType());
+			Node* child = new Node(*children);
 			//child est dans la liste fermée
 			int distanceChildCurrent = (int)round(Vector2Distance(child->getCenterPosition(), currentNode->getCenterPosition()));
 			int distanceChildEnd = (int)round(Vector2Distance(child->getCenterPosition(), getEndNode().getCenterPosition()));
@@ -171,32 +175,35 @@ std::vector<Node*> Grid::doAStar()
 			child->setF(child->getG() + child->getH());
 			child->setParent(currentNode);
 
-			bool alreadyHere = false;
+			//Child already in open list
+			bool alreadyInsideList = false;
 			for(auto openNode : openList)
 			{
-				if(openNode->getPosition().x == child->getPosition().x && openNode->getPosition().y == child->getPosition().y)
+				if(*openNode == *child)
 				{
-					alreadyHere  = true;
-					if(child->getF() > openNode->getF()) continue;
-					else
+					if(child->getF() <= openNode->getF())
 					{
 						openNode = child;
 					}
+					alreadyInsideList = true;
+					break;
 				}
 			}
-			if(!alreadyHere) openList.push_back(child);
-			
+			if(!alreadyInsideList) openList.push_back(child);
 		}
-
 	}
-
-
 	
+	std::vector<Node*> path = makePath(goalNode);
+	return path;
+}
+
+std::vector<Node*> Grid::makePath(Node* goalNode)
+{
 	std::vector<Node*> path;
-	while (goalNode != nullptr) // Remonte jusqu'à ce que tu atteignes le nœud de départ
+	while (goalNode != nullptr)
 	{
 		path.push_back(goalNode);
-		goalNode = goalNode->getParent(); // Passe au nœud parent
+		goalNode = goalNode->getParent();
 	}
 
 	std::reverse(path.begin(), path.end());
@@ -206,7 +213,7 @@ std::vector<Node*> Grid::doAStar()
 		{
 			for(int y = 0; y < verticalSize; y++)
 			{
-				if(nodes[i][y]->getPosition().x == node->getPosition().x && nodes[i][y]->getPosition().y == node->getPosition().y)
+				if(*nodes[i][y] == *node)
 				{
 					nodes[i][y]->setType(Type::Path);
 				}
@@ -214,7 +221,6 @@ std::vector<Node*> Grid::doAStar()
 		}
 		node->setType(Type::Path);
 	}
-	
 	return path;
 }
 
