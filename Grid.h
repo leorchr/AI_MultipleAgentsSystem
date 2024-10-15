@@ -24,6 +24,7 @@ public:
 	Node& getNearestNode(const Vector2 pos);
 	std::vector <Node*> doAStar();
 	std::vector <Node*> getChilds(Node* node);
+	Node& getStartNode();
 	Node& getEndNode();
 
 private:

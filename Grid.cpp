@@ -61,7 +61,7 @@ void Grid::update(float dt)
 	}
 	if(IsKeyPressed(KEY_D) && !isDebugActive) isDebugActive = true;
 	else if(IsKeyPressed(KEY_D) && isDebugActive) isDebugActive = false;
-	if(IsKeyDown(KEY_SPACE) && !canDrawStart && !canDrawEnd) doAStar();
+	if(IsKeyPressed(KEY_SPACE) && !canDrawStart && !canDrawEnd) doAStar();
 }
 
 void Grid::draw()
@@ -136,17 +136,10 @@ Node& Grid::getNearestNode(Vector2 pos)
 std::vector<Node*> Grid::doAStar()
 {
 	Node* goalNode = nullptr;
-	std::vector<Node*> path;
 	std::vector <Node*> openList = {};
 	std::vector <Node*> closedList = {};
 
-	for(int i = 0; i < horizontalSize; i++)
-	{
-		for(int y = 0; y < verticalSize; y++)
-		{
-			if(nodes[i][y]->getType() == Type::StartPoint) openList.emplace_back(nodes[i][y]);
-		}
-	}
+	openList.emplace_back(&getStartNode());
 
 	
 	while(openList.size()!=0)
@@ -197,6 +190,9 @@ std::vector<Node*> Grid::doAStar()
 
 	}
 
+
+	
+	std::vector<Node*> path;
 	while (goalNode != nullptr) // Remonte jusqu'à ce que tu atteignes le nœud de départ
 	{
 		path.push_back(goalNode);
@@ -246,6 +242,18 @@ std::vector<Node*> Grid::getChilds(Node* node)
 		}
 	}
 	return std::vector<Node*>{};
+}
+
+Node& Grid::getStartNode()
+{
+	for(int i = 0; i < horizontalSize; i++)
+	{
+		for(int y = 0; y < verticalSize; y++)
+		{
+			if(nodes[i][y]->getType() == Type::StartPoint) return *nodes[i][y];
+		}
+	}
+	return *nodes[0][0];
 }
 
 Node& Grid::getEndNode()

@@ -14,8 +14,8 @@ int main() {
     while (!WindowShouldClose()) {
         float dt = GetFrameTime();
         grid->update(dt);
-        grid->draw();
         BeginDrawing();
+        grid->draw();
         ClearBackground(Color{ 200, 200, 200, 255 });
         EndDrawing();
     }
