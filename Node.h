@@ -7,6 +7,7 @@ static constexpr int WINDOW_HEIGHT= 720;
 static constexpr Color obstaclesColor = Color{50,13,109, 155};
 static constexpr Color startPosColor = Color{163,247,181, 255};
 static constexpr Color endPosColor = Color{243,66,19, 155};
+static constexpr Color pathColor = Color{147,129,255, 155};
 static constexpr int verticalSize = 40;
 static constexpr int verticalRatioSize = WINDOW_HEIGHT/verticalSize;
 static constexpr int horizontalSize = WINDOW_WIDTH/(WINDOW_HEIGHT/verticalSize);
@@ -15,10 +16,11 @@ static constexpr float squareSize = WINDOW_HEIGHT/verticalSize;
 
 enum Type
 {
-	Path,
+	Empty,
 	Obstacle,
 	StartPoint,
-	EndPoint
+	EndPoint,
+	Path
 };
 
 Color getColorForType(Type type);

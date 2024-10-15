@@ -4,7 +4,7 @@ Color getColorForType(Type type)
 {
 	switch(type)
 	{
-	case Type::Path:
+	case Type::Empty:
 		return WHITE;
 	case Type::Obstacle:
 		return obstaclesColor;
@@ -12,6 +12,8 @@ Color getColorForType(Type type)
 		return startPosColor;
 	case Type::EndPoint:
 		return endPosColor;
+	case Type::Path:
+		return pathColor;
 	}
 	return WHITE;
 }
@@ -20,7 +22,7 @@ Node::Node(Vector2 position,Type type) : g(0), h(0), f(0), parent(nullptr),
                                position(position), type(type) {}
 
 Node::Node() : g(0), h(0), f(0), parent(nullptr),
-				position(Vector2{0,0}), type(Type::Path) {}
+				position(Vector2{0,0}), type(Type::Empty) {}
 
 bool Node::operator==(const Node& other) const
 {

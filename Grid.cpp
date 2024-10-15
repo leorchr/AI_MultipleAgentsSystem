@@ -24,7 +24,7 @@ Grid::Grid() : isDebugActive(true), currentDrawMode(DrawMode::ObstacleNode), can
 	{
 		for(int y = 0; y < verticalSize; y++)
 		{
-			nodes[i][y] = new Node(Vector2{squareSize*i,squareSize*y}, Type::Path);
+			nodes[i][y] = new Node(Vector2{squareSize*i,squareSize*y}, Type::Empty);
 		}
 	}
 }
@@ -41,17 +41,17 @@ void Grid::update(float dt)
 		switch(currentDrawMode)
 		{
 		case DrawMode::ObstacleNode:
-			if(nodeTargeted.getType() == Type::Path) nodeTargeted.setType(Type::Obstacle);
+			if(nodeTargeted.getType() == Type::Empty) nodeTargeted.setType(Type::Obstacle);
 			break;
 		case DrawMode::StartNode:
-			if(canDrawStart && nodeTargeted.getType() == Type::Path) 
+			if(canDrawStart && nodeTargeted.getType() == Type::Empty) 
 			{
 				nodeTargeted.setType(Type::StartPoint);
 				canDrawStart = false;
 			}
 			break;
 		case DrawMode::EndNode:
-			if(canDrawEnd && nodeTargeted.getType() == Type::Path) 
+			if(canDrawEnd && nodeTargeted.getType() == Type::Empty) 
 			{
 				nodeTargeted.setType(Type::EndPoint);
 				canDrawEnd = false;
@@ -169,26 +169,30 @@ std::vector<Node*> Grid::doAStar()
 		
 		for(auto childrens : childNodes)
 		{
-			Node child = Node(Vector2{childrens->getPosition().x, childrens->getPosition().y}, childrens->getType());
-			if(std::find(closedList.begin(), closedList.end(), &child) != closedList.end()) continue;
+			Node* child = new Node(Vector2{childrens->getPosition().x, childrens->getPosition().y}, childrens->getType());
+			//child est dans la liste fermée
+			int distanceChildCurrent = (int)round(Vector2Distance(child->getCenterPosition(), currentNode->getCenterPosition()));
+			int distanceChildEnd = (int)round(Vector2Distance(child->getCenterPosition(), getEndNode().getCenterPosition()));
+			child->setG(currentNode->getG() + distanceChildCurrent);
+			child->setH(distanceChildEnd);
+			child->setF(child->getG() + child->getH());
+			child->setParent(currentNode);
 
-			int distanceChildCurrent = (int)round(Vector2Distance(child.getCenterPosition(), currentNode->getCenterPosition()));
-			int distanceChildEnd = (int)round(Vector2Distance(child.getCenterPosition(), getEndNode().getCenterPosition()));
-			child.setG(currentNode->getG() + distanceChildCurrent);
-			child.setH(distanceChildEnd);
-			child.setF(child.getG() + child.getH());
-			child.setParent(currentNode);
-
-			auto it = std::find(openList.begin(), openList.end(), &child);
-			if (it != openList.end())
+			bool alreadyHere = false;
+			for(auto openNode : openList)
 			{
-				Node* existingNode = *it;
-				if (child.getG() > existingNode->getG())
+				if(openNode->getPosition().x == child->getPosition().x && openNode->getPosition().y == child->getPosition().y)
 				{
-					continue;
+					alreadyHere  = true;
+					if(child->getF() > openNode->getF()) continue;
+					else
+					{
+						openNode = child;
+					}
 				}
 			}
-			openList.push_back(&child);
+			if(!alreadyHere) openList.push_back(child);
+			
 		}
 
 	}
@@ -200,6 +204,20 @@ std::vector<Node*> Grid::doAStar()
 	}
 
 	std::reverse(path.begin(), path.end());
+	for(auto node : path)
+	{
+		for(int i = 0; i < horizontalSize; i++)
+		{
+			for(int y = 0; y < verticalSize; y++)
+			{
+				if(nodes[i][y]->getPosition().x == node->getPosition().x && nodes[i][y]->getPosition().y == node->getPosition().y)
+				{
+					nodes[i][y]->setType(Type::Path);
+				}
+			}
+		}
+		node->setType(Type::Path);
+	}
 	
 	return path;
 }
@@ -210,13 +228,19 @@ std::vector<Node*> Grid::getChilds(Node* node)
 	{
 		for(int y = 0; y < verticalSize; y++)
 		{
-			if(nodes[i][y] == node) 
+			if(nodes[i][y]->getPosition().x == node->getPosition().x && nodes[i][y]->getPosition().y == node->getPosition().y)
 			{
 				std::vector<Node*> out;
 				if(i-1 >= 0) out.push_back(nodes[i-1][y]);
 				if(i+1 < horizontalSize) out.push_back(nodes[i+1][y]);
 				if(y-1 >= 0) out.push_back(nodes[i][y-1]);
 				if(y+1 < verticalSize) out.push_back(nodes[i][y+1]);
+				
+				if(y-1 >=0 && i-1 >=0 ) out.push_back(nodes[i-1][y-1]);
+				if(i-1 >= 0 && y+1 < verticalSize) out.push_back(nodes[i-1][y+1]);
+				if(i+1 < horizontalSize && y-1 >= 0) out.push_back(nodes[i+1][y-1]);
+				if(i+1 < horizontalSize && y+1 < verticalSize) out.push_back(nodes[i+1][y+1]);
+				
 				return out;
 			}
 		}
@@ -230,7 +254,7 @@ Node& Grid::getEndNode()
 	{
 		for(int y = 0; y < verticalSize; y++)
 		{
-			if(nodes[i][y]->getType() == Type::StartPoint) return *nodes[i][y];
+			if(nodes[i][y]->getType() == Type::EndPoint) return *nodes[i][y];
 		}
 	}
 	return *nodes[0][0];
