@@ -18,6 +18,11 @@ public:
 	std::vector<Node*> getPath() const { return path; }
 	void setCanMove(bool canMove);
 	void setAgents(std::vector<Agent*> agents);
+	Vector2 separate(Agent* other);
+	Vector2 align(Agent* other);
+	int getId() const { return id; }
+	Vector2 getVelocity() const { return velocity; }
+	
 private:
 	Vector2 position;
 	int speed;
@@ -26,4 +31,10 @@ private:
 	bool canMove;
 	std::vector<Node*> path;
 	std::vector<Agent*> agents;
+	static int agentsCreated;
+	int id;
+	Vector2 velocity;
+
+	const int separationDist = 10;
+	const int alignDist = 50;
 };
