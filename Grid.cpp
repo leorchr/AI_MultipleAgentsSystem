@@ -230,18 +230,42 @@ std::vector<Node*> Grid::getChilds(Node* node)
 	{
 		for(int y = 0; y < verticalSize; y++)
 		{
-			if(nodes[i][y]->getPosition().x == node->getPosition().x && nodes[i][y]->getPosition().y == node->getPosition().y)
+			if(*nodes[i][y] == *node)
 			{
 				std::vector<Node*> out;
-				if(i-1 >= 0) out.push_back(nodes[i-1][y]);
-				if(i+1 < horizontalSize) out.push_back(nodes[i+1][y]);
-				if(y-1 >= 0) out.push_back(nodes[i][y-1]);
-				if(y+1 < verticalSize) out.push_back(nodes[i][y+1]);
+				if(i-1 >= 0)
+				{
+					if(nodes[i-1][y]->getType() != Type::Obstacle) out.push_back(nodes[i-1][y]);
+				}
+				if(i+1 < horizontalSize && nodes[i-1][y]->getType() != Type::Obstacle)
+				{
+					if(nodes[i+1][y]->getType() != Type::Obstacle) out.push_back(nodes[i+1][y]);
+				}
+				if(y-1 >= 0)
+				{
+					if(nodes[i][y-1]->getType() != Type::Obstacle) out.push_back(nodes[i][y-1]);
+				}
+				if(y+1 < verticalSize)
+				{
+					if(nodes[i][y+1]->getType() != Type::Obstacle) out.push_back(nodes[i][y+1]);
+				}
 				
-				if(y-1 >=0 && i-1 >=0 ) out.push_back(nodes[i-1][y-1]);
-				if(i-1 >= 0 && y+1 < verticalSize) out.push_back(nodes[i-1][y+1]);
-				if(i+1 < horizontalSize && y-1 >= 0) out.push_back(nodes[i+1][y-1]);
-				if(i+1 < horizontalSize && y+1 < verticalSize) out.push_back(nodes[i+1][y+1]);
+				if(y-1 >=0 && i-1 >=0)
+				{
+					if(nodes[i-1][y-1]->getType() != Type::Obstacle) out.push_back(nodes[i-1][y-1]);
+				}
+				if(i-1 >= 0 && y+1 < verticalSize)
+				{
+					if(nodes[i-1][y+1]->getType() != Type::Obstacle)out.push_back(nodes[i-1][y+1]);
+				}
+				if(i+1 < horizontalSize && y-1 >= 0)
+				{
+					if(nodes[i+1][y-1]->getType() != Type::Obstacle) out.push_back(nodes[i+1][y-1]);
+				}
+				if(i+1 < horizontalSize && y+1 < verticalSize)
+				{
+					 if(nodes[i+1][y+1]->getType() != Type::Obstacle) out.push_back(nodes[i+1][y+1]);
+				}
 				
 				return out;
 			}
