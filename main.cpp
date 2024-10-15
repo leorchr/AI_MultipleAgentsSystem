@@ -1,8 +1,10 @@
+#include "Agent.h"
 #include "Grid.h"
 #include "raylib.h"
 #include "Node.h"
 
-Grid* grid = new Grid();
+Agent* agent = new Agent(Vector2{ 50,50 });
+Grid* grid = new Grid(agent);
 
 int main() {
     
@@ -14,9 +16,11 @@ int main() {
     while (!WindowShouldClose()) {
         float dt = GetFrameTime();
         grid->update(dt);
+        agent->update(dt);
         BeginDrawing();
+        ClearBackground(Color{ 255, 255, 255, 255 });
         grid->draw();
-        ClearBackground(Color{ 200, 200, 200, 255 });
+        agent->draw();
         EndDrawing();
     }
 

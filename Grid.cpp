@@ -1,4 +1,5 @@
 ﻿#include "Grid.h"
+#include "Agent.h"
 #include <chrono>
 #include <cmath>
 #include <raylib.h>
@@ -6,19 +7,15 @@
 
 Color getColorForDrawMode(DrawMode drawMode)
 {
-	switch(drawMode)
+	switch(drawMode) 
 	{
 	case DrawMode::ObstacleNode:
 		return obstaclesColor;
-	case DrawMode::StartNode:
-		return startPosColor;
-	case DrawMode::EndNode:
-		return endPosColor;
 	}
 	return WHITE;
 }
 
-Grid::Grid() : isDebugActive(true), currentDrawMode(DrawMode::ObstacleNode), canDrawStart(true), canDrawEnd(true)
+Grid::Grid(Agent* agent) : isDebugActive(true), currentDrawMode(DrawMode::ObstacleNode), agent(agent), currentObjective(Vector2Zero())
 {
 	for(int i = 0; i < horizontalSize; i++)
 	{
@@ -31,8 +28,6 @@ Grid::Grid() : isDebugActive(true), currentDrawMode(DrawMode::ObstacleNode), can
 
 void Grid::update(float dt)
 {
-	if(IsKeyPressed(KEY_Q)) currentDrawMode = DrawMode::StartNode;
-	if(IsKeyPressed(KEY_E)) currentDrawMode = DrawMode::EndNode;
 	if(IsKeyPressed(KEY_W)) currentDrawMode = DrawMode::ObstacleNode;
 	if(IsMouseButtonDown(MOUSE_BUTTON_LEFT))
 	{
@@ -41,27 +36,18 @@ void Grid::update(float dt)
 		switch(currentDrawMode)
 		{
 		case DrawMode::ObstacleNode:
-			if(nodeTargeted.getType() == Type::Empty) nodeTargeted.setType(Type::Obstacle);
-			break;
-		case DrawMode::StartNode:
-			if(canDrawStart && nodeTargeted.getType() == Type::Empty) 
-			{
-				nodeTargeted.setType(Type::StartPoint);
-				canDrawStart = false;
-			}
-			break;
-		case DrawMode::EndNode:
-			if(canDrawEnd && nodeTargeted.getType() == Type::Empty) 
-			{
-				nodeTargeted.setType(Type::EndPoint);
-				canDrawEnd = false;
-			}
+			nodeTargeted.setType(Type::Obstacle);
+			if(currentObjective.x != 0 && currentObjective.y != 0)setupAgentPath(currentObjective);
 			break;
 		}
 	}
-	if(IsKeyPressed(KEY_D) && !isDebugActive) isDebugActive = true;
-	else if(IsKeyPressed(KEY_D) && isDebugActive) isDebugActive = false;
-	if(IsKeyPressed(KEY_SPACE) && !canDrawStart && !canDrawEnd) doAStar();
+	if(IsKeyPressed(KEY_Q) && !isDebugActive) isDebugActive = true;
+	else if(IsKeyPressed(KEY_Q) && isDebugActive) isDebugActive = false;
+	if(IsKeyPressed(KEY_SPACE))
+	{
+		currentObjective = GetMousePosition();
+		setupAgentPath(currentObjective);
+	}
 }
 
 void Grid::draw()
@@ -83,7 +69,8 @@ void Grid::draw()
 	{
 		for(const auto& node : nodesB)
 		{
-			node->draw();
+			if(!isDebugActive && node->getType() == Type::Obstacle) node->draw();
+			else if(isDebugActive) node->draw();
 		}
 	}
 	
@@ -133,7 +120,7 @@ Node& Grid::getNearestNode(Vector2 pos)
 	return *nodeTargeted;
 }
 
-std::vector<Node*> Grid::doAStar()
+std::vector<Node*> Grid::doAStar(Vector2 startPos, Vector2 endPos)
 {
 	Node* goalNode = nullptr;
 
@@ -142,7 +129,9 @@ std::vector<Node*> Grid::doAStar()
 	std::vector <Node*> closedList = {};
 
 	// Add the start node
-	openList.emplace_back(&getStartNode());
+	Node* endNode = &getNearestNode(endPos);
+	Node* startNode = &getNearestNode(startPos);
+	openList.emplace_back(startNode);
 
 	//Loop until find the end node
 	while(!openList.empty())
@@ -157,7 +146,7 @@ std::vector<Node*> Grid::doAStar()
 		
 		closedList.emplace_back(currentNode);
 		openList.erase(std::find(openList.begin(),openList.end(),currentNode));
-		if(currentNode->getType() == Type::EndPoint)
+		if(*currentNode == *endNode)
 		{
 			goalNode = currentNode;
 			break;
@@ -169,7 +158,7 @@ std::vector<Node*> Grid::doAStar()
 			Node* child = new Node(*children);
 			//child est dans la liste fermée
 			int distanceChildCurrent = (int)round(Vector2Distance(child->getCenterPosition(), currentNode->getCenterPosition()));
-			int distanceChildEnd = (int)round(Vector2Distance(child->getCenterPosition(), getEndNode().getCenterPosition()));
+			int distanceChildEnd = (int)round(Vector2Distance(child->getCenterPosition(), endNode->getCenterPosition()));
 			child->setG(currentNode->getG() + distanceChildCurrent);
 			child->setH(distanceChildEnd);
 			child->setF(child->getG() + child->getH());
@@ -195,6 +184,14 @@ std::vector<Node*> Grid::doAStar()
 	
 	std::vector<Node*> path = makePath(goalNode);
 	return path;
+}
+
+void Grid::setupAgentPath(Vector2 endPos)
+{
+	path = doAStar(agent->getPosition(), endPos);
+	agent->setPath(path);
+	getNearestNode(agent->getPosition()).setType(Type::StartPoint);
+	getNearestNode(endPos).setType(Type::EndPoint);
 }
 
 std::vector<Node*> Grid::makePath(Node* goalNode)
@@ -272,28 +269,4 @@ std::vector<Node*> Grid::getChilds(Node* node)
 		}
 	}
 	return std::vector<Node*>{};
-}
-
-Node& Grid::getStartNode()
-{
-	for(int i = 0; i < horizontalSize; i++)
-	{
-		for(int y = 0; y < verticalSize; y++)
-		{
-			if(nodes[i][y]->getType() == Type::StartPoint) return *nodes[i][y];
-		}
-	}
-	return *nodes[0][0];
-}
-
-Node& Grid::getEndNode()
-{
-	for(int i = 0; i < horizontalSize; i++)
-	{
-		for(int y = 0; y < verticalSize; y++)
-		{
-			if(nodes[i][y]->getType() == Type::EndPoint) return *nodes[i][y];
-		}
-	}
-	return *nodes[0][0];
 }

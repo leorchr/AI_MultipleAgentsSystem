@@ -14,24 +14,26 @@ enum DrawMode
 
 Color getColorForDrawMode(DrawMode drawMode);
 
+class Agent;
+
 class Grid
 {
 public:
-	Grid();
+	Grid(Agent* agent);
 	
 	void update(float dt);
 	void draw();
 	Node& getNearestNode(const Vector2 pos);
-	std::vector <Node*> doAStar();
+	std::vector <Node*> doAStar(Vector2 startPos, Vector2 endPos);
+	void setupAgentPath(Vector2 endPos);
 	std::vector <Node*> makePath(Node* goalNode);
 	std::vector <Node*> getChilds(Node* node);
-	Node& getStartNode();
-	Node& getEndNode();
 
 private:
 	bool isDebugActive;
 	enum DrawMode currentDrawMode;
 	Node* nodes[horizontalSize][verticalSize];
-	bool canDrawStart;
-	bool canDrawEnd;
+	std::vector<Node*> path;
+	Agent* agent;
+	Vector2 currentObjective;
 };

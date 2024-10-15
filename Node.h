@@ -38,7 +38,7 @@ public:
 	void setType (Type type);
 	Vector2 getPosition() const { return position; }
 	Vector2 getCenterPosition() const { return Vector2{position.x + squareSize, position.y + squareSize}; }
-	Type getType() const { return type; }
+ 	Type getType() const { return type; }
 	Node* getParent() const { return parent; }
 	int getF() const { return f; }
 	int getG() const { return g; }
