@@ -66,7 +66,11 @@ void Agent::update(float dt) {
 			pathDir = Vector2Normalize(direction);
 			if(Vector2Length(Vector2Subtract(path[currentPathIndex]->getCenterPosition(), position)) < 10)
 			{
-				if(path.size() > currentPathIndex + 1) currentPathIndex++;
+				if(path.size() > currentPathIndex + 1)
+				{
+					currentPathIndex++;
+					for(auto agent : agents) agent->setCurrentPathIndex(currentPathIndex);
+				}
 				else{
 					path.clear();
 					currentPathIndex = 0;
@@ -100,6 +104,11 @@ void Agent::setPath(std::vector<Node*> path) {
 void Agent::setCanMove(bool canMove)
 {
 	this->canMove = canMove;
+}
+
+void Agent::setCurrentPathIndex(int index)
+{
+	if(index>=0 && index < path.size()) currentPathIndex = index;
 }
 
 void Agent::setAgents(std::vector<Agent*> agents)

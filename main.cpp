@@ -3,22 +3,24 @@
 #include "raylib.h"
 #include "Node.h"
 
-const int speed = 30;
+const int speed = 60;
 const int size = 10;
 const int separationDist = 20;
-const float separationFactor = 0.3f;
-const int alignementDist = 50;
+const float separationFactor = 0.1f;
+const int alignementDist = 30;
 const float alignementFactor = 0.1f;
 
-Agent* agent = new Agent(Vector2{ 50,50 }, separationDist, alignementDist, separationFactor, alignementFactor, speed, size);
-Agent* agent2 = new Agent(Vector2{ 60,60 }, separationDist, alignementDist, separationFactor, alignementFactor, speed, size);
-Agent* agent3 = new Agent(Vector2{ 40,40 }, separationDist, alignementDist, separationFactor, alignementFactor, speed, size);
-std::vector<Agent*> agents = { agent, agent2, agent3 };
 
-Grid* grid = new Grid(agents);
 
 int main() {
-    
+
+    std::vector<Agent*> agents = {};
+    for(int i = 0; i < 500; i++)
+    {
+        Agent* agent = new Agent(Vector2{ 50,50 }, separationDist, alignementDist, separationFactor, alignementFactor, speed, size);
+        agents.push_back(agent);
+    }
+    Grid* grid = new Grid(agents);
 
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Pathfinding");
     SetTargetFPS(60);

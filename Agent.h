@@ -15,6 +15,7 @@ public:
 	Vector2 getPosition() const { return position; }
 	std::vector<Node*> getPath() const { return path; }
 	void setCanMove(bool canMove);
+	void setCurrentPathIndex(int index);
 	void setAgents(std::vector<Agent*> agents);
 	Vector2 separate(Agent* other);
 	Vector2 align(Agent* other);
