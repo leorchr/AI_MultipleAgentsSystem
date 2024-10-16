@@ -12,16 +12,17 @@ public:
 	~Agent();
 	void update(float dt);
 	void draw();
-	void setPath(std::vector<Node*> path);
-	Vector2 getPosition() const { return position; }
-	std::vector<Node*> getPath() const { return path; }
-	void setCanMove(bool canMove);
-	void setCurrentPathIndex(int index);
-	void setAgents(std::vector<Agent*> agents);
+	
 	Vector2 separate(Agent* other);
 	Vector2 align(Agent* other);
-	int getId() const { return id; }
+	void setPath(std::vector<Node*> path);
+	void setCurrentPathIndex(int index);
+	std::vector<Node*> getPath() const { return path; }
+	Vector2 getPosition() const { return position; }
 	Vector2 getcurrentDirection() const { return currentDirection; }
+	int getId() const { return id; }
+	void setCanMove(bool canMove);
+	void setAgents(std::vector<Agent*> agents);
 	
 private:
 	Vector2 position;
@@ -37,6 +38,7 @@ private:
 	bool canMove;
 	int currentPathIndex;
 	std::vector<Node*> path;
+	
 	std::vector<Agent*> agents;
 	static int agentsCreated;
 	int id;
