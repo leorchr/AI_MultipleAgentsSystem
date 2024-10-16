@@ -20,7 +20,7 @@ The project aims to create a balance between maintaining individual agent object
 - **Left Click:** Set the objective for the agents.
 - **Right Click:** Place a wall that cannot be overtaken by the agents.
 - **Wall Placement:** Walls can be dynamically added at runtime to modify paths.
-- **A/Q** Shows A* Path
+- **A/Q:** Shows A* Path
 
 ## Possible Improvements
 
