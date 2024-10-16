@@ -4,7 +4,7 @@
 
 This project focuses on implementing pathfinding for multiple agents using the A* algorithm. It introduces additional behaviors such as alignment and separation to ensure coherence between agents with minimal impact on their objective direction.
 
-[Watch agents in action](https://www.youtube.com/watch?v=YourVideoLink1)
+[Watch agents in action](https://youtu.be/NCtwT_ioPK8)
 
 - **Separation Impact:** 5%
 - **Alignment Impact:** 20%
