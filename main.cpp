@@ -6,16 +6,17 @@
 const int speed = 60;
 const int size = 10;
 const int separationDist = 20;
-const float separationFactor = 0.1f;
+const float separationFactor = 0.05f;
 const int alignementDist = 30;
-const float alignementFactor = 0.1f;
+const float alignementFactor = 0.5f;
+const int agentsNumber = 5;
 
 
 
 int main() {
 
     std::vector<Agent*> agents = {};
-    for(int i = 0; i < 500; i++)
+    for(int i = 0; i < agentsNumber; i++)
     {
         Agent* agent = new Agent(Vector2{ 50,50 }, separationDist, alignementDist, separationFactor, alignementFactor, speed, size);
         agents.push_back(agent);
