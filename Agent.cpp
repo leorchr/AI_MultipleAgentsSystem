@@ -93,7 +93,7 @@ void Agent::update(float dt) {
 }
 
 void Agent::draw() {
-	DrawCircleV(Vector2{position.x-(size/2), position.y-(size/2)}, size, RED);
+	DrawCircleV(Vector2{position.x-(size/2), position.y-(size/2)}, size, agentColor);
 }
 
 void Agent::setPath(std::vector<Node*> path) {

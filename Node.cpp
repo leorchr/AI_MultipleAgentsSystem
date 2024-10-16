@@ -7,7 +7,7 @@ Color getColorForType(Type type)
 	switch(type)
 	{
 	case Type::Empty:
-		return WHITE;
+		return emptyColor;
 	case Type::Obstacle:
 		return obstaclesColor;
 	case Type::StartPoint:

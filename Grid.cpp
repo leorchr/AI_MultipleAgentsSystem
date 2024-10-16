@@ -30,7 +30,7 @@ Grid::Grid(std::vector<Agent*> agents) : isDebugActive(true), currentDrawMode(Dr
 void Grid::update(float dt)
 {
 	if(IsKeyPressed(KEY_W)) currentDrawMode = DrawMode::ObstacleNode;
-	if(IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+	if(IsMouseButtonDown(MOUSE_BUTTON_RIGHT))
 	{
 		for(auto agent : agents) agent->setCanMove(false);
 		Vector2 mousePos = getClampedMousePosition();
@@ -43,13 +43,13 @@ void Grid::update(float dt)
 			break;
 		}
 	}
-	if(IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
+	if(IsMouseButtonReleased(MOUSE_BUTTON_RIGHT))
 	{
 		for(auto agent : agents) agent->setCanMove(true);
 	}
 	if(IsKeyPressed(KEY_Q) && !isDebugActive) isDebugActive = true;
 	else if(IsKeyPressed(KEY_Q) && isDebugActive) isDebugActive = false;
-	if(IsKeyPressed(KEY_SPACE))
+	if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
 	{
 		currentObjective = getClampedMousePosition();
 		setupAgentPath(currentObjective);
@@ -58,6 +58,16 @@ void Grid::update(float dt)
 
 void Grid::draw()
 {
+	// Draw Nodes
+	for(const auto& nodesB : nodes)
+	{
+		for(const auto& node : nodesB)
+		{
+			if(!isDebugActive && node->getType() == Type::Obstacle) node->draw();
+			else if(isDebugActive) node->draw();
+		}
+	}
+	
 	// Draw Grid
 	if(isDebugActive)
 	{
@@ -68,15 +78,6 @@ void Grid::draw()
 		for (int y= 1; y < horizontalSize; y++)
 		{
 			DrawLine(squareSize * y,0,squareSize * y, WINDOW_HEIGHT, borderColor);
-		}
-	}
-
-	for(const auto& nodesB : nodes)
-	{
-		for(const auto& node : nodesB)
-		{
-			if(!isDebugActive && node->getType() == Type::Obstacle) node->draw();
-			else if(isDebugActive) node->draw();
 		}
 	}
 	

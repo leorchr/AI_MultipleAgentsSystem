@@ -3,6 +3,7 @@
 #include <vector>
 
 class Node;
+static constexpr Color agentColor = Color{255,102,99, 255};
 
 class Agent
 {

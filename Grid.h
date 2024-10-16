@@ -3,7 +3,7 @@
 #include <raylib.h>
 #include <vector>
 
-static constexpr auto borderColor = WHITE;
+static constexpr auto borderColor = Color{0,71,79,255};
 
 enum DrawMode
 {

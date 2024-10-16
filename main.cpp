@@ -33,7 +33,7 @@ int main() {
         grid->update(dt);
 	    for(auto agent : agents) agent->update(dt);
         BeginDrawing();
-        ClearBackground(Color{ 255, 255, 255, 255 });
+        ClearBackground(Color{ 0, 39, 43, 255 });
         grid->draw();
         for(auto agent : agents) agent->draw();
         EndDrawing();
