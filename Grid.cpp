@@ -257,7 +257,7 @@ std::vector<Node*> Grid::getChilds(Node* node)
 				{
 					if(nodes[i-1][y]->getType() != Type::Obstacle) out.push_back(nodes[i-1][y]);
 				}
-				if(i+1 < horizontalSize && nodes[i-1][y]->getType() != Type::Obstacle)
+				if(i+1 < horizontalSize)
 				{
 					if(nodes[i+1][y]->getType() != Type::Obstacle) out.push_back(nodes[i+1][y]);
 				}
