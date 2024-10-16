@@ -137,7 +137,6 @@ std::vector<Node*> Grid::doAStar(Vector2 startPos, Vector2 endPos)
 
 	// Add the start node
 	Node* endNode = &getNearestNode(endPos);
-	endNode->setType(Type::EndPoint);
 	Node* startNode = &getNearestNode(startPos);
 	startNode->setType(Type::StartPoint);
 	openList.emplace_back(startNode);
@@ -174,7 +173,7 @@ std::vector<Node*> Grid::doAStar(Vector2 startPos, Vector2 endPos)
 			child->setParent(currentNode);
 
 			//Child already in open list
-			bool alreadyInsideList = false;
+			bool alreadyInsideOpenList = false;
 			for(auto openNode : openList)
 			{
 				if(*openNode == *child)
@@ -183,14 +182,23 @@ std::vector<Node*> Grid::doAStar(Vector2 startPos, Vector2 endPos)
 					{
 						openNode = child;
 					}
-					alreadyInsideList = true;
+					alreadyInsideOpenList = true;
 					break;
 				}
 			}
-			if(!alreadyInsideList) openList.push_back(child);
+			bool alreadyInsideClosedList = false;
+			for(auto closedNode : closedList)
+			{
+				if(*closedNode == *child)
+				{
+					alreadyInsideClosedList = true;
+					break;
+				}
+			}
+			if(!alreadyInsideOpenList && !alreadyInsideClosedList) openList.push_back(child);
 		}
 	}
-	
+	if(goalNode == nullptr) return std::vector<Node*>{};
 	std::vector<Node*> path = makePath(goalNode);
 	return path;
 }
