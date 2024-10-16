@@ -24,7 +24,6 @@ int main() {
     Grid* grid = new Grid(agents);
 
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Pathfinding");
-    SetTargetFPS(60);
     //ToggleFullscreen();
 
     for(auto agent:agents) agent->setAgents(agents);
@@ -36,6 +35,8 @@ int main() {
         ClearBackground(Color{ 0, 39, 43, 255 });
         grid->draw();
         for(auto agent : agents) agent->draw();
+        DrawText(TextFormat("FPS: %i", (int)(1.0f/dt)), 40, WINDOW_HEIGHT - 40, 20, Color{0,134,145,255});
+
         EndDrawing();
     }
 
