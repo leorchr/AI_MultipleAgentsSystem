@@ -3,10 +3,16 @@
 #include "raylib.h"
 #include "Node.h"
 
-Agent* agent = new Agent(Vector2{ 50,50 });
-Agent* agent2 = new Agent(Vector2{ 70,70 });
-Agent* agent3 = new Agent(Vector2{ 1000,500 });
+const int speed = 30;
+const int size = 10;
+const int separationDist = 20;
+const float separationFactor = 0.3f;
+const int alignementDist = 50;
+const float alignementFactor = 0.1f;
 
+Agent* agent = new Agent(Vector2{ 50,50 }, separationDist, alignementDist, separationFactor, alignementFactor, speed, size);
+Agent* agent2 = new Agent(Vector2{ 60,60 }, separationDist, alignementDist, separationFactor, alignementFactor, speed, size);
+Agent* agent3 = new Agent(Vector2{ 40,40 }, separationDist, alignementDist, separationFactor, alignementFactor, speed, size);
 std::vector<Agent*> agents = { agent, agent2, agent3 };
 
 Grid* grid = new Grid(agents);

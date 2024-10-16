@@ -2,14 +2,12 @@
 #include <raylib.h>
 #include <vector>
 
-static constexpr int speed = 100;
-
 class Node;
 
 class Agent
 {
 public:
-	Agent(Vector2 position);
+	Agent(Vector2 position, int separationDist, int alignDist, float separationFactor, float alignFactor, int speed, int size);
 	~Agent();
 	void update(float dt);
 	void draw();
@@ -21,20 +19,23 @@ public:
 	Vector2 separate(Agent* other);
 	Vector2 align(Agent* other);
 	int getId() const { return id; }
-	Vector2 getVelocity() const { return velocity; }
+	Vector2 getcurrentDirection() const { return currentDirection; }
 	
 private:
 	Vector2 position;
+	Vector2 currentDirection;
+	int separationDist;
+	int alignDist;
+	float separationFactor;
+	float alignFactor;
+	
 	int speed;
 	int size;
-	int currentPathIndex;
+	
 	bool canMove;
+	int currentPathIndex;
 	std::vector<Node*> path;
 	std::vector<Agent*> agents;
 	static int agentsCreated;
 	int id;
-	Vector2 velocity;
-
-	const int separationDist = 10;
-	const int alignDist = 50;
 };

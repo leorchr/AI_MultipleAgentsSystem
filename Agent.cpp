@@ -5,7 +5,9 @@
 
 int Agent::agentsCreated = 0;
 
-Agent::Agent(Vector2 position) : position(position), speed(50), size(10), currentPathIndex(0), canMove(true), id(0)
+Agent::Agent(Vector2 position, int separationDist, int alignDist, float separationFactor, float alignFactor, int speed, int size) :
+	position(position), currentDirection(Vector2Zero()), separationDist(separationDist), alignDist(alignDist), separationFactor(separationFactor), alignFactor(alignFactor),
+	speed(speed), size(size), canMove(true), currentPathIndex(0), id(0)
 {
 	id = agentsCreated;
 	agentsCreated++;
@@ -74,17 +76,20 @@ void Agent::update(float dt) {
 	}
 
 	Vector2 dir = Vector2Zero();
+	separation.x *= separationFactor;
+	separation.y *= separationFactor;
 	dir=Vector2Add(dir, separation);
+	alignement.x *= alignFactor;
+	alignement.y *= alignFactor;
 	dir=Vector2Add(dir, alignement);
 	dir=Vector2Add(dir, pathDir);
 	Vector2Normalize(dir);
 	Vector2 newPosition = Vector2{position.x + dir.x * (dt * speed),position.y + dir.y * (dt * speed)};
-	velocity = Vector2Subtract(newPosition, position);
 	position = newPosition;
 }
 
 void Agent::draw() {
-	DrawCircleV(Vector2{position.x-(size/2), position.y-(size/2)}, 10, RED);
+	DrawCircleV(Vector2{position.x-(size/2), position.y-(size/2)}, size, RED);
 }
 
 void Agent::setPath(std::vector<Node*> path) {
@@ -126,7 +131,7 @@ Vector2 Agent::align(Agent* other)
 	float dist = Vector2Length(distVector2);
 	if(dist < alignDist)
 	{
-		return other->getVelocity();
+		return other->getcurrentDirection();
 	}
 	else return Vector2Zero();
 }
