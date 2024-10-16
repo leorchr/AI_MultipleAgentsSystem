@@ -21,8 +21,40 @@ Agent::~Agent() {}
 
 void Agent::update(float dt)
 {
-	Vector2 pathDir = Vector2Zero();
+	Vector2 dir = Vector2Zero();
+	dir = Vector2Add(dir, combineAlignSeparateDir());
+	if(canMove)
+	{
+		dir = Vector2Add(dir, getPathDirection());
+	}
+	Vector2Normalize(dir);
+	
+	auto newPosition = Vector2{position.x + dir.x * (dt * speed), position.y + dir.y * (dt * speed)};
+	position = newPosition;
+}
 
+void Agent::draw()
+{
+	DrawCircleV(Vector2{position.x - (size / 2), position.y - (size / 2)}, size, agentColor);
+}
+
+Vector2 Agent::separate(Agent* other)
+{
+	Vector2 posBoid = other->getPosition();
+	Vector2 posSelf = position;
+	Vector2 distVector2 = Vector2Subtract(posSelf, posBoid);
+
+	float dist = Vector2Length(distVector2);
+	if(dist < separationDist)
+	{
+		Vector2Normalize(distVector2);
+		return distVector2;
+	}
+	return Vector2Zero();
+}
+
+Vector2 Agent::combineAlignSeparateDir()
+{
 	Vector2 separationValue = Vector2Zero();
 	int separationSum = 0;
 
@@ -52,68 +84,20 @@ void Agent::update(float dt)
 		separationValue.x /= separationSum;
 		separationValue.y /= separationSum;
 	}
+	
 	if(alignementSum != 0)
 	{
 		alignementValue.x /= alignementSum;
 		alignementValue.y /= alignementSum;
 	}
+	
+	separationValue.x *= separationFactor;
+	separationValue.y *= separationFactor;
+	
+	alignementValue.x *= alignFactor;
+	alignementValue.y *= alignFactor;
 
-	Vector2 separation = separationValue;
-	Vector2 alignement = alignementValue;
-
-	if(canMove)
-	{
-		if(!path.empty())
-		{
-			Vector2 direction = Vector2Subtract(path[currentPathIndex]->getCenterPosition(), position);
-			pathDir = Vector2Normalize(direction);
-			if(Vector2Length(Vector2Subtract(path[currentPathIndex]->getCenterPosition(), position)) < 10)
-			{
-				if(path.size() > currentPathIndex + 1)
-				{
-					currentPathIndex++;
-					for(auto agent : agents) agent->setCurrentPathIndex(currentPathIndex);
-				}
-				else
-				{
-					path.clear();
-					currentPathIndex = 0;
-				}
-			}
-		}
-	}
-
-	Vector2 dir = Vector2Zero();
-	separation.x *= separationFactor;
-	separation.y *= separationFactor;
-	dir = Vector2Add(dir, separation);
-	alignement.x *= alignFactor;
-	alignement.y *= alignFactor;
-	dir = Vector2Add(dir, alignement);
-	dir = Vector2Add(dir, pathDir);
-	Vector2Normalize(dir);
-	auto newPosition = Vector2{position.x + dir.x * (dt * speed), position.y + dir.y * (dt * speed)};
-	position = newPosition;
-}
-
-void Agent::draw()
-{
-	DrawCircleV(Vector2{position.x - (size / 2), position.y - (size / 2)}, size, agentColor);
-}
-
-Vector2 Agent::separate(Agent* other)
-{
-	Vector2 posBoid = other->getPosition();
-	Vector2 posSelf = position;
-	Vector2 distVector2 = Vector2Subtract(posSelf, posBoid);
-
-	float dist = Vector2Length(distVector2);
-	if(dist < separationDist)
-	{
-		Vector2Normalize(distVector2);
-		return distVector2;
-	}
-	return Vector2Zero();
+	return Vector2Add(separationValue, alignementValue);
 }
 
 Vector2 Agent::align(Agent* other)
@@ -125,7 +109,7 @@ Vector2 Agent::align(Agent* other)
 	float dist = Vector2Length(distVector2);
 	if(dist < alignDist)
 	{
-		return other->getcurrentDirection();
+		return other->getCurrentDirection();
 	}
 	return Vector2Zero();
 }
@@ -139,6 +123,30 @@ void Agent::setPath(std::vector<Node*> path)
 void Agent::setCurrentPathIndex(int index)
 {
 	if(index >= 0 && index < path.size()) currentPathIndex = index;
+}
+
+Vector2 Agent::getPathDirection()
+{
+	Vector2 pathDir = Vector2Zero();
+	if(!path.empty())
+	{
+		Vector2 direction = Vector2Subtract(path[currentPathIndex]->getCenterPosition(), position);
+		pathDir = Vector2Normalize(direction);
+		if(Vector2Length(Vector2Subtract(path[currentPathIndex]->getCenterPosition(), position)) < 10)
+		{
+			if(path.size() > currentPathIndex + 1)
+			{
+				currentPathIndex++;
+				for(auto agent : agents) agent->setCurrentPathIndex(currentPathIndex);
+			}
+			else
+			{
+				path.clear();
+				currentPathIndex = 0;
+			}
+		}
+	}
+	return pathDir;
 }
 
 void Agent::setCanMove(bool canMove)

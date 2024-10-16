@@ -14,12 +14,14 @@ public:
 	void draw();
 	
 	Vector2 separate(Agent* other);
+	Vector2 combineAlignSeparateDir();
 	Vector2 align(Agent* other);
 	void setPath(std::vector<Node*> path);
 	void setCurrentPathIndex(int index);
 	std::vector<Node*> getPath() const { return path; }
+	Vector2 getPathDirection();
 	Vector2 getPosition() const { return position; }
-	Vector2 getcurrentDirection() const { return currentDirection; }
+	Vector2 getCurrentDirection() const { return currentDirection; }
 	int getId() const { return id; }
 	void setCanMove(bool canMove);
 	void setAgents(std::vector<Agent*> agents);
